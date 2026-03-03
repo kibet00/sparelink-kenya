@@ -7,10 +7,13 @@ const api = axios.create({
   },
 })
 
-// Automatically attach token to every request
+
 api.interceptors.request.use((config) => {
+  const publicEndpoints = ['/users/register/', '/users/login/']
+  const isPublic = publicEndpoints.some(url => config.url.includes(url))
+  
   const token = localStorage.getItem('access_token')
-  if (token) {
+  if (token && !isPublic) {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config

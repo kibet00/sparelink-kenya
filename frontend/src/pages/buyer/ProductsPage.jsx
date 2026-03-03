@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Search, Filter, Star, Package } from 'lucide-react'
 import api from '../../utils/api'
 
@@ -12,6 +13,7 @@ export default function ProductsPage() {
     brand: '',
     vehicle: '',
   })
+  const navigate = useNavigate()
 
   useEffect(() => {
     fetchProducts()
@@ -46,7 +48,6 @@ export default function ProductsPage() {
 
   return (
     <div style={styles.container}>
-      {/* Search Bar */}
       <div style={styles.searchSection}>
         <h1 style={styles.title}>Browse Spare Parts</h1>
         <form onSubmit={handleSearch} style={styles.searchForm}>
@@ -118,7 +119,10 @@ export default function ProductsPage() {
             />
           </div>
 
-          <button onClick={() => fetchProducts({ search, ...filters })} style={styles.applyBtn}>
+          <button
+            onClick={() => fetchProducts({ search, ...filters })}
+            style={styles.applyBtn}
+          >
             Apply Filters
           </button>
           <button onClick={clearFilters} style={styles.clearBtn}>
@@ -141,7 +145,11 @@ export default function ProductsPage() {
                 <div key={product.id} style={styles.card}>
                   <div style={styles.cardImage}>
                     {product.image ? (
-                      <img src={`http://127.0.0.1:8000${product.image}`} alt={product.name} style={styles.image} />
+                      <img
+                        src={`http://127.0.0.1:8000${product.image}`}
+                        alt={product.name}
+                        style={styles.image}
+                      />
                     ) : (
                       <div style={styles.noImage}>
                         <Package size={40} color="#ccc" />
@@ -154,7 +162,9 @@ export default function ProductsPage() {
                     <p style={styles.vehicle}>{product.vehicle_model}</p>
                     <div style={styles.cardFooter}>
                       <div>
-                        <p style={styles.price}>KES {Number(product.price).toLocaleString()}</p>
+                        <p style={styles.price}>
+                          KES {Number(product.price).toLocaleString()}
+                        </p>
                         <p style={product.in_stock ? styles.inStock : styles.outOfStock}>
                           {product.in_stock ? 'In Stock' : 'Out of Stock'}
                         </p>
@@ -165,7 +175,12 @@ export default function ProductsPage() {
                       </div>
                     </div>
                     <p style={styles.supplier}>Seller: {product.supplier_name}</p>
-                    <button style={styles.viewBtn}>View Details</button>
+                    <button
+                      style={styles.viewBtn}
+                      onClick={() => navigate(`/buyer/products/${product.id}`)}
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))}

@@ -4,13 +4,16 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import BuyerDashboard from './pages/buyer/BuyerDashboard'
 import ProductsPage from './pages/buyer/ProductsPage'
+import ProductDetail from './pages/buyer/ProductDetail'
 import Orders from './pages/buyer/Orders'
+import Messages from './pages/buyer/Messages'
 import SupplierDashboard from './pages/supplier/SupplierDashboard'
 import AddProduct from './pages/supplier/AddProduct'
 import SupplierProducts from './pages/supplier/SupplierProducts'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import ManageUsers from './pages/admin/ManageUsers'
 import VerifySuppliers from './pages/admin/VerifySuppliers'
+import AdminOrders from './pages/admin/AdminOrders'
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth()
@@ -31,7 +34,9 @@ function App() {
         {/* Buyer */}
         <Route path="/buyer/dashboard" element={<ProtectedRoute allowedRoles={['buyer']}><BuyerDashboard /></ProtectedRoute>} />
         <Route path="/buyer/products" element={<ProtectedRoute allowedRoles={['buyer']}><ProductsPage /></ProtectedRoute>} />
+        <Route path="/buyer/products/:id" element={<ProtectedRoute allowedRoles={['buyer']}><ProductDetail /></ProtectedRoute>} />
         <Route path="/buyer/orders" element={<ProtectedRoute allowedRoles={['buyer']}><Orders /></ProtectedRoute>} />
+        <Route path="/buyer/messages" element={<ProtectedRoute allowedRoles={['buyer']}><Messages /></ProtectedRoute>} />
 
         {/* Supplier */}
         <Route path="/supplier/dashboard" element={<ProtectedRoute allowedRoles={['supplier']}><SupplierDashboard /></ProtectedRoute>} />
@@ -42,6 +47,7 @@ function App() {
         <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['admin']}><ManageUsers /></ProtectedRoute>} />
         <Route path="/admin/verify-suppliers" element={<ProtectedRoute allowedRoles={['admin']}><VerifySuppliers /></ProtectedRoute>} />
+        <Route path="/admin/orders" element={<ProtectedRoute allowedRoles={['admin']}><AdminOrders /></ProtectedRoute>} />
       </Routes>
     </Router>
   )

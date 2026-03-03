@@ -1,14 +1,37 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Search, Package, MessageSquare, User, LogOut } from 'lucide-react'
+import api from '../../utils/api'
 
 export default function BuyerDashboard() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [stats, setStats] = useState({ totalOrders: 0, unreadMessages: 0 })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [ordersRes, inboxRes] = await Promise.all([
+          api.get('/orders/my-orders/'),
+          api.get('/messages/inbox/'),
+        ])
+        const orders = ordersRes.data.results || ordersRes.data
+        const inbox = inboxRes.data
+        setStats({
+          totalOrders: orders.length,
+          unreadMessages: inbox.length,
+        })
+      } catch (err) {
+        console.error('Failed to fetch stats', err)
+      }
+    }
+    fetchStats()
+  }, [])
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   return (
@@ -46,13 +69,13 @@ export default function BuyerDashboard() {
         <div style={styles.cards}>
           <div style={styles.card}>
             <Package size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.totalOrders}</p>
             <p>Total Orders</p>
           </div>
           <div style={styles.card}>
             <MessageSquare size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
-            <p>Unread Messages</p>
+            <p style={styles.cardNumber}>{stats.unreadMessages}</p>
+            <p>Conversations</p>
           </div>
           <div style={styles.card}>
             <Search size={24} color="#c9a84c" />
@@ -78,7 +101,7 @@ const styles = {
   container: { display: 'flex', minHeight: '100vh', fontFamily: 'sans-serif' },
   sidebar: { width: '240px', background: '#1a1a2e', color: 'white', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' },
   logo: { color: '#c9a84c', marginBottom: '2rem', fontSize: '1.5rem' },
-  navItem: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', cursor: 'pointer', borderRadius: '6px', marginBottom: '0.5rem', transition: 'background 0.2s' },
+  navItem: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', cursor: 'pointer', borderRadius: '6px', marginBottom: '0.5rem' },
   logoutBtn: { marginTop: 'auto', padding: '0.75rem', background: '#c9a84c', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' },
   main: { flex: 1, background: '#f5f5f5', padding: '2rem' },
   header: { marginBottom: '2rem' },

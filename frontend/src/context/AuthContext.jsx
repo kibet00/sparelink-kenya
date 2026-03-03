@@ -26,12 +26,20 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = async () => {
-    const refresh = localStorage.getItem('refresh_token')
-    await api.post('/users/logout/', { refresh })
-    localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    localStorage.removeItem('user')
-    setUser(null)
+    try {
+      const refresh = localStorage.getItem('refresh_token')
+      if (refresh) {
+        await api.post('/users/logout/', { refresh })
+      }
+    } catch (err) {
+      console.error('Logout API error:', err)
+    } finally {
+      // Always clear localStorage and state regardless of API result
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      localStorage.removeItem('user')
+      setUser(null)
+    }
   }
 
   const register = async (data) => {

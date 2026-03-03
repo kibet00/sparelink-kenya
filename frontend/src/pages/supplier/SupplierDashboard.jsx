@@ -1,14 +1,40 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Package, Plus, ShoppingCart, MessageSquare, User, LogOut } from 'lucide-react'
+import api from '../../utils/api'
 
 export default function SupplierDashboard() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [stats, setStats] = useState({ totalProducts: 0, totalOrders: 0, unreadMessages: 0 })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [productsRes, ordersRes, inboxRes] = await Promise.all([
+          api.get('/products/supplier/my-listings/'),
+          api.get('/orders/my-orders/'),
+          api.get('/messages/inbox/'),
+        ])
+        const products = productsRes.data.results || productsRes.data
+        const orders = ordersRes.data.results || ordersRes.data
+        const inbox = inboxRes.data
+        setStats({
+          totalProducts: products.length,
+          totalOrders: orders.filter(o => o.status === 'pending').length,
+          unreadMessages: inbox.length,
+        })
+      } catch (err) {
+        console.error('Failed to fetch stats', err)
+      }
+    }
+    fetchStats()
+  }, [])
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   return (
@@ -54,36 +80,28 @@ export default function SupplierDashboard() {
         <div style={styles.cards}>
           <div style={styles.card}>
             <Package size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.totalProducts}</p>
             <p>Listed Products</p>
           </div>
           <div style={styles.card}>
             <ShoppingCart size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.totalOrders}</p>
             <p>Pending Orders</p>
           </div>
           <div style={styles.card}>
             <MessageSquare size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
-            <p>Unread Messages</p>
+            <p style={styles.cardNumber}>{stats.unreadMessages}</p>
+            <p>Conversations</p>
           </div>
         </div>
 
         <div style={styles.actions}>
           <h2>Quick Actions</h2>
           <div style={styles.actionButtons}>
-            <button style={styles.actionBtn} onClick={() => navigate('/supplier/add-product')}>
-              Add Product
-            </button>
-            <button style={styles.actionBtn} onClick={() => navigate('/supplier/products')}>
-              View Inventory
-            </button>
-            <button style={styles.actionBtn} onClick={() => navigate('/supplier/orders')}>
-              View Orders
-            </button>
-            <button style={styles.actionBtn} onClick={() => navigate('/supplier/messages')}>
-              Messages
-            </button>
+            <button style={styles.actionBtn} onClick={() => navigate('/supplier/add-product')}>Add Product</button>
+            <button style={styles.actionBtn} onClick={() => navigate('/supplier/products')}>View Inventory</button>
+            <button style={styles.actionBtn} onClick={() => navigate('/supplier/orders')}>View Orders</button>
+            <button style={styles.actionBtn} onClick={() => navigate('/supplier/messages')}>Messages</button>
           </div>
         </div>
       </div>

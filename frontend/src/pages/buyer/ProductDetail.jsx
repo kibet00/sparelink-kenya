@@ -61,7 +61,7 @@ export default function ProductDetail() {
         {/* Image */}
         <div style={styles.imageSection}>
           {product.image ? (
-            <img src={`http://127.0.0.1:8000${product.image}`} alt={product.name} style={styles.image} />
+            <img style={styles.image} src={product.image.startsWith('http') ? product.image : `http://127.0.0.1:8000${product.image}`} alt={product.name} />
           ) : (
             <div style={styles.noImage}>
               <Package size={64} color="#ccc" />

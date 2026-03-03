@@ -70,10 +70,20 @@ export default function Orders() {
                   </p>
                 ))}
               </div>
-              <div style={styles.orderFooter}>
-                <p style={styles.total}>Total: KES {Number(order.total_amount).toLocaleString()}</p>
-                <p style={styles.date}>{new Date(order.created_at).toLocaleDateString()}</p>
-              </div>
+             <div style={styles.orderFooter}>
+  <p style={styles.total}>Total: KES {Number(order.total_amount).toLocaleString()}</p>
+  <div style={styles.orderActions}>
+    <p style={styles.date}>{new Date(order.created_at).toLocaleDateString()}</p>
+    {order.status === 'pending' && (
+      <button
+        style={styles.payBtn}
+        onClick={() => navigate(`/buyer/payment/${order.id}`)}
+      >
+        Pay Now
+      </button>
+    )}
+  </div>
+</div>
             </div>
           ))}
         </div>
@@ -98,4 +108,6 @@ const styles = {
   orderFooter: { display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #f0f0f0', paddingTop: '1rem' },
   total: { fontWeight: 'bold', color: '#c9a84c' },
   date: { color: '#999', fontSize: '0.85rem' },
+  orderActions: { display: 'flex', alignItems: 'center', gap: '1rem' },
+  payBtn: { padding: '0.4rem 1rem', background: '#4CAF50', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold' },
 }

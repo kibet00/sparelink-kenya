@@ -12,4 +12,7 @@ urlpatterns = [
     path('admin/all/',                   views.AdminUserListView.as_view(),       name='admin-users'),
     path('admin/verify/<int:user_id>/',  views.AdminVerifySupplierView.as_view(), name='admin-verify'),
     path('admin/suspend/<int:user_id>/', views.AdminSuspendUserView.as_view(),    name='admin-suspend'),
+
+    path('profile/', views.ProfileUpdateView.as_view(), name='profile-update'),
+    path('profile/change-password/', views.ChangePasswordView.as_view(), name='change-password'),
 ]

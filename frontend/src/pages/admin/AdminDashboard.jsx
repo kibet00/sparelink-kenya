@@ -1,14 +1,45 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Users, ShieldCheck, Package, ShoppingCart, CreditCard, LogOut } from 'lucide-react'
+import api from '../../utils/api'
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const [stats, setStats] = useState({
+    totalUsers: 0, verifiedSuppliers: 0,
+    pendingSuppliers: 0, totalProducts: 0, totalOrders: 0,
+  })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [usersRes, productsRes, ordersRes] = await Promise.all([
+          api.get('/users/admin/all/'),
+          api.get('/products/'),
+          api.get('/orders/my-orders/'),
+        ])
+        const users = usersRes.data.results || usersRes.data
+        const products = productsRes.data.results || productsRes.data
+        const orders = ordersRes.data.results || ordersRes.data
+        setStats({
+          totalUsers: users.length,
+          verifiedSuppliers: users.filter(u => u.role === 'supplier' && u.status === 'active').length,
+          pendingSuppliers: users.filter(u => u.role === 'supplier' && u.status === 'pending').length,
+          totalProducts: products.length,
+          totalOrders: orders.length,
+        })
+      } catch (err) {
+        console.error('Failed to fetch stats', err)
+      }
+    }
+    fetchStats()
+  }, [])
 
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   return (
@@ -50,27 +81,27 @@ export default function AdminDashboard() {
         <div style={styles.cards}>
           <div style={styles.card}>
             <Users size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.totalUsers}</p>
             <p>Registered Users</p>
           </div>
           <div style={styles.card}>
             <ShieldCheck size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.verifiedSuppliers}</p>
             <p>Verified Suppliers</p>
           </div>
           <div style={styles.card}>
             <ShieldCheck size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.pendingSuppliers}</p>
             <p>Awaiting Verification</p>
           </div>
           <div style={styles.card}>
             <Package size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.totalProducts}</p>
             <p>Listed Products</p>
           </div>
           <div style={styles.card}>
             <ShoppingCart size={24} color="#c9a84c" />
-            <p style={styles.cardNumber}>0</p>
+            <p style={styles.cardNumber}>{stats.totalOrders}</p>
             <p>Total Orders</p>
           </div>
         </div>

@@ -146,7 +146,7 @@ export default function ProductsPage() {
                   <div style={styles.cardImage}>
                     {product.image ? (
                       <img
-                        src={`http://127.0.0.1:8000${product.image}`}
+                        src={product.image.startsWith('http') ? product.image : `http://127.0.0.1:8000${product.image}`}
                         alt={product.name}
                         style={styles.image}
                       />

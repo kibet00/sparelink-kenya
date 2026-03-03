@@ -1,24 +1,49 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import api from '../../utils/api'
 
-export default function AddProduct() {
+export default function EditProduct() {
+  const { id } = useParams()
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '', description: '', part_number: '',
     brand: '', vehicle_model: '', price: '',
     stock: '', category: '',
   })
-  const [image, setImage] = useState(null)
   const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const navigate = useNavigate()
 
   useEffect(() => {
-    api.get('/products/categories/').then(res => setCategories(res.data.results || res.data))
-  }, [])
+    const fetchData = async () => {
+      try {
+        const [productRes, catRes] = await Promise.all([
+          api.get(`/products/supplier/${id}/edit/`),
+          api.get('/products/categories/'),
+        ])
+        const p = productRes.data
+        setFormData({
+          name: p.name || '',
+          description: p.description || '',
+          part_number: p.part_number || '',
+          brand: p.brand || '',
+          vehicle_model: p.vehicle_model || '',
+          price: p.price || '',
+          stock: p.stock || '',
+          category: p.category || '',
+        })
+        setCategories(catRes.data.results || catRes.data)
+      } catch (err) {
+        setError('Failed to load product.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [id])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -26,31 +51,28 @@ export default function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
+    setSaving(true)
     setError('')
     try {
-      const data = new FormData()
-      Object.keys(formData).forEach(key => { if (formData[key]) data.append(key, formData[key]) })
-      if (image) data.append('image', image)
-      await api.post('/products/supplier/add/', data, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-      setSuccess('Product listed successfully!')
+      await api.patch(`/products/supplier/${id}/edit/`, formData)
+      setSuccess('Product updated successfully!')
       setTimeout(() => navigate('/supplier/products'), 1500)
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to add product.')
+      setError(err.response?.data?.detail || 'Failed to update product.')
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
   }
+
+  if (loading) return <div style={styles.loading}>Loading product...</div>
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <button onClick={() => navigate('/supplier/dashboard')} style={styles.backBtn}>
+        <button onClick={() => navigate('/supplier/products')} style={styles.backBtn}>
           <ArrowLeft size={16} /> Back
         </button>
-        <h1 style={styles.title}>Add New Product</h1>
+        <h1 style={styles.title}>Edit Product</h1>
       </div>
 
       <div style={styles.formCard}>
@@ -72,7 +94,7 @@ export default function AddProduct() {
             </div>
             <div style={styles.field}>
               <label>Vehicle Model *</label>
-              <input name="vehicle_model" value={formData.vehicle_model} onChange={handleChange} style={styles.input} required placeholder="e.g. Toyota Mark X, Honda Vezel" />
+              <input name="vehicle_model" value={formData.vehicle_model} onChange={handleChange} style={styles.input} required />
             </div>
             <div style={styles.field}>
               <label>Price (KES) *</label>
@@ -91,17 +113,19 @@ export default function AddProduct() {
                 ))}
               </select>
             </div>
-            <div style={styles.field}>
-              <label>Product Image</label>
-              <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} style={styles.input} />
-            </div>
           </div>
           <div style={styles.field}>
             <label>Description</label>
-            <textarea name="description" value={formData.description} onChange={handleChange} style={styles.textarea} rows={4} />
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              style={styles.textarea}
+              rows={4}
+            />
           </div>
-          <button type="submit" style={styles.submitBtn} disabled={loading}>
-            {loading ? 'Saving...' : 'List Product'}
+          <button type="submit" style={styles.submitBtn} disabled={saving}>
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       </div>
@@ -111,6 +135,7 @@ export default function AddProduct() {
 
 const styles = {
   container: { padding: '2rem', background: '#f5f5f5', minHeight: '100vh' },
+  loading: { padding: '3rem', textAlign: 'center', color: '#666' },
   header: { display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' },
   backBtn: { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer' },
   title: { color: '#1a1a2e' },

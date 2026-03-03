@@ -1,5 +1,6 @@
 import { useAuth } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
+import { LayoutDashboard, Search, Package, MessageSquare, User, LogOut } from 'lucide-react'
 
 export default function BuyerDashboard() {
   const { user, logout } = useAuth()
@@ -12,51 +13,60 @@ export default function BuyerDashboard() {
 
   return (
     <div style={styles.container}>
-      {/* Sidebar */}
       <div style={styles.sidebar}>
         <h2 style={styles.logo}>SpareLink</h2>
         <nav>
-          <p style={styles.navItem}>🔍 Browse Parts</p>
-          <p style={styles.navItem}>📦 My Orders</p>
-          <p style={styles.navItem}>💬 Messages</p>
-          <p style={styles.navItem}>👤 Profile</p>
+          <div style={styles.navItem} onClick={() => navigate('/buyer/dashboard')}>
+            <LayoutDashboard size={16} /> <span>Dashboard</span>
+          </div>
+          <div style={styles.navItem} onClick={() => navigate('/buyer/products')}>
+            <Search size={16} /> <span>Browse Parts</span>
+          </div>
+          <div style={styles.navItem} onClick={() => navigate('/buyer/orders')}>
+            <Package size={16} /> <span>My Orders</span>
+          </div>
+          <div style={styles.navItem} onClick={() => navigate('/buyer/messages')}>
+            <MessageSquare size={16} /> <span>Messages</span>
+          </div>
+          <div style={styles.navItem} onClick={() => navigate('/buyer/profile')}>
+            <User size={16} /> <span>Profile</span>
+          </div>
         </nav>
-        <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
+        <button onClick={handleLogout} style={styles.logoutBtn}>
+          <LogOut size={16} /> <span>Logout</span>
+        </button>
       </div>
 
-      {/* Main Content */}
       <div style={styles.main}>
         <div style={styles.header}>
-          <h1 style={styles.welcome}>Welcome back, {user?.fullName}! 👋</h1>
+          <h1 style={styles.welcome}>Welcome back, {user?.fullName}!</h1>
           <p style={styles.subtitle}>Find genuine spare parts from verified suppliers</p>
         </div>
 
-        {/* Stats Cards */}
         <div style={styles.cards}>
           <div style={styles.card}>
-            <h3>📦 My Orders</h3>
+            <Package size={24} color="#c9a84c" />
             <p style={styles.cardNumber}>0</p>
-            <p>Total orders placed</p>
+            <p>Total Orders</p>
           </div>
           <div style={styles.card}>
-            <h3>💬 Messages</h3>
+            <MessageSquare size={24} color="#c9a84c" />
             <p style={styles.cardNumber}>0</p>
-            <p>Unread messages</p>
+            <p>Unread Messages</p>
           </div>
           <div style={styles.card}>
-            <h3>⭐ Reviews</h3>
+            <Search size={24} color="#c9a84c" />
             <p style={styles.cardNumber}>0</p>
-            <p>Reviews given</p>
+            <p>Saved Parts</p>
           </div>
         </div>
 
-        {/* Quick Actions */}
         <div style={styles.actions}>
           <h2>Quick Actions</h2>
           <div style={styles.actionButtons}>
-            <button style={styles.actionBtn}>🔍 Search Parts</button>
-            <button style={styles.actionBtn}>📦 View Orders</button>
-            <button style={styles.actionBtn}>💬 Messages</button>
+            <button style={styles.actionBtn} onClick={() => navigate('/buyer/products')}>Browse Parts</button>
+            <button style={styles.actionBtn} onClick={() => navigate('/buyer/orders')}>View Orders</button>
+            <button style={styles.actionBtn} onClick={() => navigate('/buyer/messages')}>Messages</button>
           </div>
         </div>
       </div>
@@ -68,8 +78,8 @@ const styles = {
   container: { display: 'flex', minHeight: '100vh', fontFamily: 'sans-serif' },
   sidebar: { width: '240px', background: '#1a1a2e', color: 'white', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' },
   logo: { color: '#c9a84c', marginBottom: '2rem', fontSize: '1.5rem' },
-  navItem: { padding: '0.75rem 1rem', cursor: 'pointer', borderRadius: '6px', marginBottom: '0.5rem', transition: 'background 0.2s' },
-  logoutBtn: { marginTop: 'auto', padding: '0.75rem', background: '#c9a84c', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' },
+  navItem: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', cursor: 'pointer', borderRadius: '6px', marginBottom: '0.5rem', transition: 'background 0.2s' },
+  logoutBtn: { marginTop: 'auto', padding: '0.75rem', background: '#c9a84c', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' },
   main: { flex: 1, background: '#f5f5f5', padding: '2rem' },
   header: { marginBottom: '2rem' },
   welcome: { color: '#1a1a2e', marginBottom: '0.5rem' },

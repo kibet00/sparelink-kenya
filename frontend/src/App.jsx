@@ -2,8 +2,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './context/AuthContext'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import BuyerDashboard from './pages/buyer/BuyerDashboard'
+import SupplierDashboard from './pages/supplier/SupplierDashboard'
+import AdminDashboard from './pages/admin/AdminDashboard'
 
-// Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth()
   if (loading) return <div>Loading...</div>
@@ -24,21 +26,21 @@ function App() {
         {/* Buyer Routes */}
         <Route path="/buyer/dashboard" element={
           <ProtectedRoute allowedRoles={['buyer']}>
-            <div>Buyer Dashboard - Coming Soon</div>
+            <BuyerDashboard />
           </ProtectedRoute>
         } />
 
         {/* Supplier Routes */}
         <Route path="/supplier/dashboard" element={
           <ProtectedRoute allowedRoles={['supplier']}>
-            <div>Supplier Dashboard - Coming Soon</div>
+            <SupplierDashboard />
           </ProtectedRoute>
         } />
 
         {/* Admin Routes */}
         <Route path="/admin/dashboard" element={
           <ProtectedRoute allowedRoles={['admin']}>
-            <div>Admin Dashboard - Coming Soon</div>
+            <AdminDashboard />
           </ProtectedRoute>
         } />
       </Routes>

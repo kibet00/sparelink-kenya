@@ -6,8 +6,7 @@ urlpatterns = [
     path('',                             views.ProductListView.as_view(),          name='product-list'),
     path('<int:pk>/',                    views.ProductDetailView.as_view(),        name='product-detail'),
     path('categories/',                  views.CategoryListView.as_view(),         name='categories'),
-    path('<int:product_id>/reviews/',    views.ReviewCreateView.as_view(),         name='review-create'),
-
+    path('<int:product_id>/reviews/',    views.ReviewListCreateView.as_view(),     name='review-list-create'),
     # Supplier
     path('supplier/my-listings/',        views.SupplierProductListView.as_view(),  name='supplier-products'),
     path('supplier/add/',                views.SupplierProductCreateView.as_view(), name='supplier-add-product'),

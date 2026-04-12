@@ -23,7 +23,7 @@ import VerifySuppliers from './pages/admin/VerifySuppliers'
 import AdminOrders from './pages/admin/AdminOrders'
 import AdminProducts from './pages/admin/AdminProducts'
 import AdminPayments from './pages/admin/AdminPayments'
-
+import Reviews from './pages/buyer/Reviews'
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth()
   if (loading) return <div>Loading...</div>
@@ -41,6 +41,7 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Buyer */}
+        <Route path="/buyer/products/:id/reviews" element={<ProtectedRoute allowedRoles={['buyer']}><Reviews /></ProtectedRoute>} />
         <Route path="/buyer/dashboard" element={<ProtectedRoute allowedRoles={['buyer']}><BuyerDashboard /></ProtectedRoute>} />
         <Route path="/buyer/products" element={<ProtectedRoute allowedRoles={['buyer']}><ProductsPage /></ProtectedRoute>} />
         <Route path="/buyer/products/:id" element={<ProtectedRoute allowedRoles={['buyer']}><ProductDetail /></ProtectedRoute>} />

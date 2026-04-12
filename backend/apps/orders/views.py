@@ -16,12 +16,19 @@ class PlaceOrderView(generics.CreateAPIView):
 
 
 class BuyerOrderListView(generics.ListAPIView):
-    """Buyer: View own order history"""
+    """Buyer: View own orders | Supplier: View orders with their products | Admin: View all orders"""
     serializer_class   = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(buyer=self.request.user)
+        user = self.request.user
+        if user.role == 'admin':
+            return Order.objects.all().order_by('-created_at')
+        if user.role == 'supplier':
+            return Order.objects.filter(
+                items__product__supplier=user
+            ).distinct().order_by('-created_at')
+        return Order.objects.filter(buyer=user).order_by('-created_at')
 
 
 class OrderDetailView(generics.RetrieveAPIView):

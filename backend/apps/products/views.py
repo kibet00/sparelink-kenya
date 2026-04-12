@@ -88,3 +88,19 @@ class CategoryListView(generics.ListAPIView):
     serializer_class   = CategorySerializer
     permission_classes = [permissions.AllowAny]
     queryset           = Category.objects.all()
+class ReviewListCreateView(generics.ListCreateAPIView):
+    """List reviews (public) and create review (authenticated buyers)"""
+    serializer_class = ReviewSerializer
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
+    def get_queryset(self):
+        product_id = self.kwargs['product_id']
+        return Review.objects.filter(product_id=product_id).order_by('-created_at')
+
+    def perform_create(self, serializer):
+        product = Product.objects.get(pk=self.kwargs['product_id'])
+        serializer.save(buyer=self.request.user, product=product)

@@ -7,8 +7,34 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_root(request):
+    return Response({
+        'name': 'SpareLink Kenya API',
+        'version': '1.0.0',
+        'status': 'running',
+        'description': 'Kenya\'s trusted spare parts marketplace API',
+        'endpoints': {
+            'admin': '/admin/',
+            'users': '/api/users/',
+            'products': '/api/products/',
+            'orders': '/api/orders/',
+            'payments': '/api/payments/',
+            'messages': '/api/messages/',
+        }
+    })
+
 
 urlpatterns = [
+    # API Root
+    path('', api_root, name='api-root'),
+
     # Django Admin
     path('admin/', admin.site.urls),
 

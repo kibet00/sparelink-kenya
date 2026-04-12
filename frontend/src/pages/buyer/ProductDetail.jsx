@@ -132,6 +132,13 @@ export default function ProductDetail() {
                   rows={3}
                 />
               </div>
+              <button
+  style={styles.reviewsBtn}
+  onClick={() => navigate(`/buyer/products/${id}/reviews`)}
+>
+  <Star size={16} /> Read Reviews ({product.review_count})
+</button>
+              
               <button style={styles.orderBtn} onClick={handleOrder} disabled={ordering}>
                 <ShoppingCart size={16} />
                 {ordering ? 'Placing Order...' : `Order Now — KES ${Number(product.price * quantity).toLocaleString()}`}
@@ -145,6 +152,7 @@ export default function ProductDetail() {
 }
 
 const styles = {
+  reviewsBtn: { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', background: 'white', color: '#1a1a2e', border: '2px solid #1a1a2e', borderRadius: '6px', cursor: 'pointer', fontSize: '0.95rem', marginBottom: '1rem' },
   container: { padding: '2rem', background: '#f5f5f5', minHeight: '100vh' },
   loading: { padding: '3rem', textAlign: 'center', color: '#666' },
   backBtn: { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'white', border: '1px solid #ddd', borderRadius: '6px', cursor: 'pointer', marginBottom: '1.5rem' },
